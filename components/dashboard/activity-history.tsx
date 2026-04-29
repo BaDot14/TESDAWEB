@@ -73,7 +73,7 @@ export function ActivityHistory() {
                 key={activity.id}
                 className="flex gap-4 py-3 border-b last:border-b-0 hover:bg-gray-50 px-2 rounded transition-colors"
               >
-                <div className="text-2xl flex-shrink-0">
+                <div className="text-2xl shrink-0">
                   {activityIcons[activity.type]}
                 </div>
 
@@ -86,7 +86,7 @@ export function ActivityHistory() {
                   </p>
                 </div>
 
-                <div className="text-xs text-muted-foreground flex-shrink-0 text-right">
+                <div className="text-xs text-muted-foreground shrink-0 text-right">
                   {formatTime(activity.timestamp)}
                 </div>
               </div>

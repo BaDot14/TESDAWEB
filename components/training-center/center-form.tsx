@@ -26,7 +26,7 @@ export function CenterForm({ onSubmit, initialData, isEditing = false }: CenterF
       contact: '',
       email: '',
       website: '',
-      status: 'Active',
+      status: 'active',
       programsOffered: '',
       latitude: '',
       longitude: '',
@@ -60,7 +60,7 @@ export function CenterForm({ onSubmit, initialData, isEditing = false }: CenterF
 
   const classifications = ['Technical', 'Administrative', 'Vocational'];
 
-  const statuses = ['Active', 'Inactive'];
+  const statuses = ['active', 'Inactive'];
 
   return (
     <Card className="rounded-3xl">
