@@ -9,9 +9,10 @@ import { X, Search } from 'lucide-react';
 
 interface ActivityHistoryProps {
   activities: Activity[];
+  onClearHistory: () => void;
 }
 
-export function ActivityHistory({ activities }: ActivityHistoryProps) {
+export function ActivityHistory({ activities, onClearHistory }: ActivityHistoryProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredActivities = useMemo(() => {
@@ -29,6 +30,10 @@ export function ActivityHistory({ activities }: ActivityHistoryProps) {
   };
 
   const clearSearch = () => setSearchTerm('');
+  const handleClearHistory = () => {
+    clearSearch();
+    onClearHistory();
+  };
 
   const formatTime = (date: Date) => {
     return new Intl.DateTimeFormat(undefined, {
@@ -41,7 +46,17 @@ export function ActivityHistory({ activities }: ActivityHistoryProps) {
     <Card className="rounded-3xl">
       <CardHeader className="border-b">
         <div className="flex flex-col gap-4">
-          <CardTitle>Activity History</CardTitle>
+          <div className="flex items-center justify-between gap-4">
+            <CardTitle>Activity History</CardTitle>
+            <Button
+              variant="outline"
+              onClick={handleClearHistory}
+              disabled={activities.length === 0}
+              className="rounded-lg"
+            >
+              Clear History
+            </Button>
+          </div>
 
           <div className="flex gap-2">
             <div className="flex-1 relative">

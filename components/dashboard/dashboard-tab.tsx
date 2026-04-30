@@ -9,9 +9,10 @@ import { mockTrainers } from './mock-data';
 interface DashboardTabProps {
   centers: TrainingCenter[];
   activities: Activity[];
+  onClearHistory: () => void;
 }
 
-export function DashboardTab({ centers, activities }: DashboardTabProps) {
+export function DashboardTab({ centers, activities, onClearHistory }: DashboardTabProps) {
   const activeTrainingCenters = centers.filter((center) => center.status === 'active').length;
   const totalPrograms = centers.reduce((total, center) => total + center.programs.length, 0);
 
@@ -30,7 +31,7 @@ export function DashboardTab({ centers, activities }: DashboardTabProps) {
         totalTrainers={mockTrainers.length}
       />
 
-      <ActivityHistory activities={activities} />
+      <ActivityHistory activities={activities} onClearHistory={onClearHistory} />
     </div>
   );
 }

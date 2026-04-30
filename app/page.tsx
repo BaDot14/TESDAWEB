@@ -90,6 +90,10 @@ export default function Home() {
     setActiveTab('training-center');
   };
 
+  const handleClearHistory = () => {
+    setActivities([]);
+  };
+
   const viewingCenter = viewingCenterId ? centers.find((c) => c.id === viewingCenterId) : null;
 
   return (
@@ -106,7 +110,7 @@ export default function Home() {
         ) : (
           <>
             <div className={activeTab === 'dashboard' ? 'block' : 'hidden'}>
-              <DashboardTab centers={centers} activities={activities} />
+              <DashboardTab centers={centers} activities={activities} onClearHistory={handleClearHistory} />
             </div>
             <div className={activeTab === 'training-center' ? 'block' : 'hidden'}>
               <CenterRegistrationTab
