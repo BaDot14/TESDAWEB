@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +27,7 @@ export function CentersList({
   filter,
   onFilterChange,
 }: CentersListProps) {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredCenters = centers.filter((center) => {
@@ -45,6 +47,10 @@ export function CentersList({
     return matchesFilter && matchesSearch;
   });
   const sortedCenters = [...filteredCenters].reverse();
+
+  const handleViewCenter = (center: TrainingCenter) => {
+    onView(center);
+  };
 
   return (
     <Card className="rounded-3xl">
@@ -105,7 +111,7 @@ export function CentersList({
                   <tr
                     key={center.id}
                     className="border-b hover:bg-blue-50 transition-colors cursor-pointer"
-                    onClick={() => onView(center)}
+                    onClick={() => handleViewCenter(center)}
                   >
                     <td className="px-6 py-4 font-medium text-foreground">
                       <div>
@@ -152,7 +158,7 @@ export function CentersList({
                           size="icon"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onView(center);
+                            handleViewCenter(center);
                           }}
                           className="rounded-lg h-8 w-8 hover:bg-blue-100"
                         >

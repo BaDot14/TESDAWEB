@@ -18,11 +18,13 @@ interface CenterViewModalProps {
   center: TrainingCenter | null;
   onClose: () => void;
   onAddProgram: (centerId: string, program: CenterProgram) => void;
+  onUpdateProgram?: (centerId: string, program: CenterProgram) => void;
 }
 
-export function CenterViewModal({ isOpen, center, onClose, onAddProgram }: CenterViewModalProps) {
+export function CenterViewModal({ isOpen, center, onClose, onAddProgram, onUpdateProgram }: CenterViewModalProps) {
   const [isAddProgramOpen, setIsAddProgramOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<CenterProgram | null>(null);
+  const [editingProgram, setEditingProgram] = useState<CenterProgram | null>(null);
 
   if (!center) {
     return null;
@@ -36,7 +38,12 @@ export function CenterViewModal({ isOpen, center, onClose, onAddProgram }: Cente
   const handleClose = () => {
     setIsAddProgramOpen(false);
     setSelectedProgram(null);
+    setEditingProgram(null);
     onClose();
+  };
+
+  const handleEditProgram = (program: CenterProgram) => {
+    setEditingProgram(program);
   };
 
   return (
@@ -92,7 +99,7 @@ export function CenterViewModal({ isOpen, center, onClose, onAddProgram }: Cente
             <div>
               <h3 className="text-lg font-semibold">Program Offers</h3>
               <p className="text-sm text-muted-foreground">
-                Add a registered program and view only the program summary below.
+                All registered program details displayed below.
               </p>
             </div>
             <Button onClick={() => setIsAddProgramOpen(true)} className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white">
@@ -100,32 +107,55 @@ export function CenterViewModal({ isOpen, center, onClose, onAddProgram }: Cente
             </Button>
           </div>
 
-          <div className="space-y-3">
-            {center.programs.length > 0 ? (
-              center.programs.map((program) => (
-                <div
-                  key={program.id}
-                  className="flex items-center justify-between gap-4 rounded-xl border p-4 hover:bg-blue-50 transition-colors"
-                >
-                  <div>
-                    <p className="font-semibold text-foreground">{program.name}</p>
-                    <p className="text-sm text-muted-foreground">{program.type}</p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    className="rounded-lg"
-                    onClick={() => setSelectedProgram(program)}
-                  >
-                    View
-                  </Button>
-                </div>
-              ))
-            ) : (
-              <div className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">
-                No programs added yet.
-              </div>
-            )}
-          </div>
+          {center.programs.length > 0 ? (
+            <div className="overflow-x-auto rounded-xl border">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-100 border-b">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">Program Name</th>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">Type</th>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">Hours</th>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">Registration Number</th>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">Date Issued</th>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">Validity Date</th>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">Trainer</th>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">CTPR Number</th>
+                    <th className="px-4 py-3 text-left font-semibold text-foreground">Issuance Type</th>
+                    <th className="px-4 py-3 text-center font-semibold text-foreground">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {center.programs.map((program, index) => (
+                    <tr key={program.id} className={`border-b hover:bg-blue-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
+                      <td className="px-4 py-3 font-medium text-foreground">{program.name}</td>
+                      <td className="px-4 py-3 text-foreground">{program.type}</td>
+                      <td className="px-4 py-3 text-foreground">{program.numberOfHours}</td>
+                      <td className="px-4 py-3 text-foreground">{program.programRegistrationNumber}</td>
+                      <td className="px-4 py-3 text-foreground">{program.dateIssued}</td>
+                      <td className="px-4 py-3 text-foreground">{program.validityDate}</td>
+                      <td className="px-4 py-3 text-foreground">{program.trainer}</td>
+                      <td className="px-4 py-3 text-foreground">{program.ctprSerialNumber}</td>
+                      <td className="px-4 py-3 text-foreground">{program.issuanceType}</td>
+                      <td className="px-4 py-3 text-center">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-lg"
+                          onClick={() => handleEditProgram(program)}
+                        >
+                          Edit
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">
+              No programs added yet.
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -137,10 +167,16 @@ export function CenterViewModal({ isOpen, center, onClose, onAddProgram }: Cente
       />
 
       <ProgramModal
-        isOpen={!!selectedProgram}
-        mode="view"
-        program={selectedProgram}
-        onClose={() => setSelectedProgram(null)}
+        isOpen={!!editingProgram}
+        mode="edit"
+        program={editingProgram}
+        onClose={() => setEditingProgram(null)}
+        onSubmit={(program) => {
+          if (editingProgram && onUpdateProgram) {
+            onUpdateProgram(center.id, program);
+          }
+          setEditingProgram(null);
+        }}
       />
     </>
   );

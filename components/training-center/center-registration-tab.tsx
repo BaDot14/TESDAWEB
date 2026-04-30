@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { CentersList } from './centers-list';
 import { CenterModal } from './center-modal';
-import { CenterViewModal } from './center-view-modal';
 import { CenterProgram, TrainingCenter } from './mock-data';
 import { Button } from '@/components/ui/button';
 
@@ -13,6 +12,8 @@ interface CenterRegistrationTabProps {
   onUpdateCenter: (center: TrainingCenter) => void;
   onDeleteCenter: (id: string) => void;
   onAddProgram: (centerId: string, program: CenterProgram) => void;
+  onUpdateProgram?: (centerId: string, program: CenterProgram) => void;
+  onViewCenter?: (centerId: string) => void;
 }
 
 export function CenterRegistrationTab({
@@ -21,11 +22,12 @@ export function CenterRegistrationTab({
   onUpdateCenter,
   onDeleteCenter,
   onAddProgram,
+  onUpdateProgram,
+  onViewCenter,
 }: CenterRegistrationTabProps) {
   const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCenter, setEditingCenter] = useState<TrainingCenter | null>(null);
-  const [viewingCenterId, setViewingCenterId] = useState<string | null>(null);
 
   const handleAddCenter = (newCenter: TrainingCenter) => {
     onAddCenter(newCenter);
@@ -50,7 +52,7 @@ export function CenterRegistrationTab({
   };
 
   const handleOpenViewModal = (center: TrainingCenter) => {
-    setViewingCenterId(center.id);
+    onViewCenter?.(center.id);
   };
 
   const handleOpenAddModal = () => {
@@ -105,13 +107,6 @@ export function CenterRegistrationTab({
           setEditingCenter(null);
         }}
         onSubmit={handleSubmitModal}
-      />
-
-      <CenterViewModal
-        isOpen={!!viewingCenterId}
-        center={centers.find((center) => center.id === viewingCenterId) || null}
-        onClose={() => setViewingCenterId(null)}
-        onAddProgram={(centerId, program) => onAddProgram(centerId, program)}
       />
     </div>
   );
