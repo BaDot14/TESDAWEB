@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,8 +27,6 @@ export function CenterForm({ onSubmit, initialData, isEditing = false }: CenterF
       contact: '',
       email: '',
       website: '',
-      status: 'active',
-      programsOffered: '',
       latitude: '',
       longitude: '',
     },
@@ -60,12 +59,20 @@ export function CenterForm({ onSubmit, initialData, isEditing = false }: CenterF
 
   const classifications = ['Technical', 'Administrative', 'Vocational'];
 
-  const statuses = ['active', 'Inactive'];
 
   return (
     <Card className="rounded-3xl">
       <CardHeader className="border-b">
-        <CardTitle>Training Center Registration</CardTitle>
+        <div className="flex items-center gap-4 mb-4">
+          <Image
+            src="/tesda-logo.png"
+            alt="TESDA Logo"
+            width={60}
+            height={60}
+            className="object-contain"
+          />
+          <CardTitle>Training Center Registration</CardTitle>
+        </div>
       </CardHeader>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <CardContent className="pt-6 space-y-6">
@@ -199,33 +206,9 @@ export function CenterForm({ onSubmit, initialData, isEditing = false }: CenterF
             />
           </div>
 
-          {/* Status */}
-          <div>
-            <label className="text-sm font-medium mb-2 block">Status</label>
-            <select
-              {...register('status', { required: true })}
-              className="w-full h-9 rounded-lg border border-input bg-transparent px-3 py-1 text-base"
-            >
-              {statuses.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          </div>
+          
 
-          {/* Programs Offered */}
-          <div>
-            <label className="text-sm font-medium mb-2 block">
-              Programs Offered List of Programs (comma-separated)
-            </label>
-            <textarea
-              {...register('programsOffered')}
-              placeholder="List all programs offered (comma-separated)"
-              rows={4}
-              className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-base resize-none"
-            />
-          </div>
+          
 
           {/* Geo Map */}
           <div className="border-t pt-6">

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { BarChart3, Building2, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -30,9 +31,14 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
       {/* Logo / Branding */}
       <div className="px-6 py-6 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
-            <span className="text-xl font-bold text-white">T</span>
-          </div>
+          <Image
+              src="/tesda-logo.png"
+              alt="TESDA Logo"
+              width={40}
+              height={40}
+              className="object-contain"
+              priority
+/>
           <div>
             <h1 className="text-white font-bold text-lg">TESDA</h1>
             <p className="text-white/60 text-xs">Management System</p>

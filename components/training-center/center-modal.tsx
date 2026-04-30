@@ -25,7 +25,10 @@ export function CenterModal({ isOpen, center, onClose, onSubmit }: CenterModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent
+        className="w-[900px] max-w-[95vw] max-h-[80vh] overflow-y-auto"
+        style={{ width: '900px', maxWidth: '95vw' }}
+      >
         <DialogHeader>
           <DialogTitle>
             {center ? 'Edit Training Center' : 'Add New Training Center'}
