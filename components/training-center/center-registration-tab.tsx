@@ -3,30 +3,49 @@
 import { useState } from 'react';
 import { CentersList } from './centers-list';
 import { CenterModal } from './center-modal';
-import { TrainingCenter, generateMockCenters } from './mock-data';
+import { CenterViewModal } from './center-view-modal';
+import { CenterProgram, TrainingCenter } from './mock-data';
 import { Button } from '@/components/ui/button';
 
-export function CenterRegistrationTab() {
-  const [centers, setCenters] = useState<TrainingCenter[]>(generateMockCenters());
+interface CenterRegistrationTabProps {
+  centers: TrainingCenter[];
+  onAddCenter: (center: TrainingCenter) => void;
+  onUpdateCenter: (center: TrainingCenter) => void;
+  onDeleteCenter: (id: string) => void;
+  onAddProgram: (centerId: string, program: CenterProgram) => void;
+}
+
+export function CenterRegistrationTab({
+  centers,
+  onAddCenter,
+  onUpdateCenter,
+  onDeleteCenter,
+  onAddProgram,
+}: CenterRegistrationTabProps) {
   const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCenter, setEditingCenter] = useState<TrainingCenter | null>(null);
+  const [viewingCenterId, setViewingCenterId] = useState<string | null>(null);
 
   const handleAddCenter = (newCenter: TrainingCenter) => {
-    setCenters([...centers, { ...newCenter, id: `center-${Date.now()}` }]);
+    onAddCenter(newCenter);
   };
 
   const handleEditCenter = (updatedCenter: TrainingCenter) => {
-    setCenters(centers.map((c) => (c.id === updatedCenter.id ? updatedCenter : c)));
+    onUpdateCenter(updatedCenter);
   };
 
   const handleDeleteCenter = (id: string) => {
-    setCenters(centers.filter((c) => c.id !== id));
+    onDeleteCenter(id);
   };
 
   const handleOpenEditModal = (center: TrainingCenter) => {
     setEditingCenter(center);
     setIsModalOpen(true);
+  };
+
+  const handleOpenViewModal = (center: TrainingCenter) => {
+    setViewingCenterId(center.id);
   };
 
   const handleOpenAddModal = () => {
@@ -64,6 +83,7 @@ export function CenterRegistrationTab() {
       {/* Centers List */}
       <CentersList
         centers={centers}
+        onView={handleOpenViewModal}
         onEdit={handleOpenEditModal}
         onDelete={handleDeleteCenter}
         filter={filter}
@@ -79,6 +99,13 @@ export function CenterRegistrationTab() {
           setEditingCenter(null);
         }}
         onSubmit={handleSubmitModal}
+      />
+
+      <CenterViewModal
+        isOpen={!!viewingCenterId}
+        center={centers.find((center) => center.id === viewingCenterId) || null}
+        onClose={() => setViewingCenterId(null)}
+        onAddProgram={(centerId, program) => onAddProgram(centerId, program)}
       />
     </div>
   );

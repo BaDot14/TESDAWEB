@@ -4,11 +4,14 @@ import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { mockActivities, Activity } from './mock-data';
+import { Activity } from './mock-data';
 import { X, Search } from 'lucide-react';
 
-export function ActivityHistory() {
-  const [activities] = useState<Activity[]>(mockActivities);
+interface ActivityHistoryProps {
+  activities: Activity[];
+}
+
+export function ActivityHistory({ activities }: ActivityHistoryProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredActivities = useMemo(() => {

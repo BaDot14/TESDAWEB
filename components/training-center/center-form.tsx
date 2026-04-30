@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -14,12 +15,12 @@ interface CenterFormProps {
 }
 
 export function CenterForm({ onSubmit, initialData, isEditing = false }: CenterFormProps) {
-  const { register, handleSubmit, reset } = useForm<TrainingCenter>({
+  const { register, handleSubmit, reset, watch, setValue } = useForm<TrainingCenter>({
     defaultValues: initialData || {
       id: `center-${Date.now()}`,
       name: '',
       city: '',
-      district: 'Region II',
+      district: 'Region XI',
       type: '',
       classification: '',
       address: '',
@@ -27,10 +28,23 @@ export function CenterForm({ onSubmit, initialData, isEditing = false }: CenterF
       contact: '',
       email: '',
       website: '',
+      programs: [],
       latitude: '',
       longitude: '',
     },
   });
+
+  const selectedType = watch('type');
+  const hasInitializedSubtype = useRef(false);
+
+  useEffect(() => {
+    if (!hasInitializedSubtype.current) {
+      hasInitializedSubtype.current = true;
+      return;
+    }
+
+    setValue('classification', '');
+  }, [selectedType, setValue]);
 
   const handleFormSubmit = (data: TrainingCenter) => {
     onSubmit(data);
@@ -41,23 +55,40 @@ export function CenterForm({ onSubmit, initialData, isEditing = false }: CenterF
 
   const municipalities = [
     'Bansalan',
+    'Digos City',
     'Hagonoy',
     'Kiblawan',
     'Magsaysay',
     'Malalag',
     'Matanao',
     'Padada',
-    'Sta Cruz',
+    'Santa Cruz',
     'Sulop',
   ];
 
-  const institutionTypes = [
-    'TESDA Training Center',
-    'Private Institution',
-    'Government Institution',
+  const privateInstitutionTypes = ['Enterprise/Company', 'HEIs', 'NGO/Foundation', 'TVIs'];
+
+  const publicInstitutionTypes = [
+    'DepEd Supv.',
+    'GOCC/GFI',
+    'LCU',
+    'LGU',
+    'NGA',
+    'Specialized training center',
+    'SUCs',
+    'TTI(PTC)',
+    'TTI(RTC)',
+    'TTI(SCHOOL)',
   ];
 
-  const classifications = ['Technical', 'Administrative', 'Vocational'];
+  const institutionTypes = ['Private', 'Public'];
+
+  const classifications =
+    selectedType === 'Private'
+      ? privateInstitutionTypes
+      : selectedType === 'Public'
+        ? publicInstitutionTypes
+        : [];
 
 
   return (
@@ -121,12 +152,13 @@ export function CenterForm({ onSubmit, initialData, isEditing = false }: CenterF
 
           {/* Classification */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Classification</label>
+            <label className="text-sm font-medium mb-2 block">Institution Subtype</label>
             <select
               {...register('classification', { required: true })}
               className="w-full h-9 rounded-lg border border-input bg-transparent px-3 py-1 text-base"
+              disabled={!selectedType}
             >
-              <option value="">Select Classification</option>
+              <option value="">Select Subtype</option>
               {classifications.map((classification) => (
                 <option key={classification} value={classification}>
                   {classification}
@@ -205,10 +237,6 @@ export function CenterForm({ onSubmit, initialData, isEditing = false }: CenterF
               className="rounded-lg"
             />
           </div>
-
-          
-
-          
 
           {/* Geo Map */}
           <div className="border-t pt-6">

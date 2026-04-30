@@ -5,10 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TrainingCenter } from './mock-data';
-import { Edit2, Trash2, CheckCircle, XCircle, Search } from 'lucide-react';
+import { Edit2, Eye, Trash2, CheckCircle, XCircle, Search } from 'lucide-react';
 
 interface CentersListProps {
   centers: TrainingCenter[];
+  onView: (center: TrainingCenter) => void;
   onEdit: (center: TrainingCenter) => void;
   onDelete: (id: string) => void;
   filter: 'all' | 'active' | 'inactive';
@@ -17,6 +18,7 @@ interface CentersListProps {
 
 export function CentersList({
   centers,
+  onView,
   onEdit,
   onDelete,
   filter,
@@ -28,7 +30,16 @@ export function CentersList({
     const matchesFilter = filter === 'all' || center.status === filter;
     const matchesSearch =
       center.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      center.city.toLowerCase().includes(searchTerm.toLowerCase());
+      center.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      center.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      center.classification.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      center.programs.some(
+        (program) =>
+          program.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          program.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          program.trainer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          program.programRegistrationNumber.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
     return matchesFilter && matchesSearch;
   });
 
@@ -82,20 +93,25 @@ export function CentersList({
                 <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">
                   Status
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">
-                  Actions
-                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredCenters.length > 0 ? (
                 filteredCenters.map((center) => (
-                  <tr key={center.id} className="border-b hover:bg-blue-50 transition-colors cursor-pointer" onClick={() => onEdit(center)}>
+                  <tr
+                    key={center.id}
+                    className="border-b hover:bg-blue-50 transition-colors cursor-pointer"
+                    onClick={() => onView(center)}
+                  >
                     <td className="px-6 py-4 font-medium text-foreground">
                       <div>
                         <p className="font-semibold">{center.name}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">
                           {center.classification}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Programs: {center.programs.length}
                         </p>
                       </div>
                     </td>
@@ -128,6 +144,17 @@ export function CentersList({
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onView(center);
+                          }}
+                          className="rounded-lg h-8 w-8 hover:bg-blue-100"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
