@@ -39,6 +39,11 @@ export function CenterRegistrationTab({
     onDeleteCenter(id);
   };
 
+  const handleToggleStatus = (center: TrainingCenter) => {
+    const nextStatus = center.status === 'active' ? 'inactive' : 'active';
+    onUpdateCenter({ ...center, status: nextStatus });
+  };
+
   const handleOpenEditModal = (center: TrainingCenter) => {
     setEditingCenter(center);
     setIsModalOpen(true);
@@ -86,6 +91,7 @@ export function CenterRegistrationTab({
         onView={handleOpenViewModal}
         onEdit={handleOpenEditModal}
         onDelete={handleDeleteCenter}
+        onToggleStatus={handleToggleStatus}
         filter={filter}
         onFilterChange={setFilter}
       />

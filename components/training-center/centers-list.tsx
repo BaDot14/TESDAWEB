@@ -12,6 +12,7 @@ interface CentersListProps {
   onView: (center: TrainingCenter) => void;
   onEdit: (center: TrainingCenter) => void;
   onDelete: (id: string) => void;
+  onToggleStatus: (center: TrainingCenter) => void;
   filter: 'all' | 'active' | 'inactive';
   onFilterChange: (filter: 'all' | 'active' | 'inactive') => void;
 }
@@ -21,6 +22,7 @@ export function CentersList({
   onView,
   onEdit,
   onDelete,
+  onToggleStatus,
   filter,
   onFilterChange,
 }: CentersListProps) {
@@ -42,6 +44,7 @@ export function CentersList({
       );
     return matchesFilter && matchesSearch;
   });
+  const sortedCenters = [...filteredCenters].reverse();
 
   return (
     <Card className="rounded-3xl">
@@ -97,8 +100,8 @@ export function CentersList({
               </tr>
             </thead>
             <tbody>
-              {filteredCenters.length > 0 ? (
-                filteredCenters.map((center) => (
+              {sortedCenters.length > 0 ? (
+                sortedCenters.map((center) => (
                   <tr
                     key={center.id}
                     className="border-b hover:bg-blue-50 transition-colors cursor-pointer"
@@ -154,6 +157,21 @@ export function CentersList({
                           className="rounded-lg h-8 w-8 hover:bg-blue-100"
                         >
                           <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleStatus(center);
+                          }}
+                          className={`rounded-lg h-8 px-3 text-xs font-semibold ${
+                            center.status === 'active'
+                              ? 'text-red-600 hover:bg-red-100'
+                              : 'text-green-600 hover:bg-green-100'
+                          }`}
+                        >
+                          {center.status === 'active' ? 'Inactive' : 'Active'}
                         </Button>
                         <Button
                           variant="ghost"

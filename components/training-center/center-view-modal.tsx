@@ -72,7 +72,13 @@ export function CenterViewModal({ isOpen, center, onClose, onAddProgram }: Cente
             </div>
             <div className="rounded-xl border p-4 bg-slate-50">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">Contact</p>
-              <p className="mt-1 font-medium">{center.contact}</p>
+              <div className="mt-1">
+                <p className="font-medium">{center.phone}</p>
+                <p className="text-xs text-muted-foreground">{center.email}</p>
+                {center.website ? (
+                  <p className="text-xs text-muted-foreground">{center.website}</p>
+                ) : null}
+              </div>
             </div>
             <div className="rounded-xl border p-4 bg-slate-50">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">Status</p>
