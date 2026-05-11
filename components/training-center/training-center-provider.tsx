@@ -1,38 +1,41 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Sidebar } from '@/components/layout/sidebar';
-import { MainLayout } from '@/components/layout/main-layout';
-import { DashboardTab } from '@/components/dashboard/dashboard-tab';
-import { CenterRegistrationTab } from '@/components/training-center/center-registration-tab';
-import { CenterDetailView } from '@/components/training-center/center-detail-view';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { TrainingCenter, CenterProgram, createMockTrainingCenterState } from './mock-data';
 import { Activity } from '@/components/dashboard/mock-data';
-import { CenterProgram, TrainingCenter, createMockTrainingCenterState } from '@/components/training-center/mock-data';
 
-export default function Home() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const viewingCenterId = searchParams.get('viewCenter');
+interface TrainingCenterContextType {
+  centers: TrainingCenter[];
+  activities: Activity[];
+  addCenter: (center: TrainingCenter) => void;
+  updateCenter: (center: TrainingCenter) => void;
+  deleteCenter: (id: string) => void;
+  addProgram: (centerId: string, program: CenterProgram) => void;
+  updateProgram: (centerId: string, program: CenterProgram) => void;
+  deleteProgram: (centerId: string, programId: string) => void;
+  clearHistory: () => void;
+}
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'training-center'>('dashboard');
+const TrainingCenterContext = createContext<TrainingCenterContextType | undefined>(undefined);
+
+export function TrainingCenterProvider({ children }: { children: ReactNode }) {
   const [initialState] = useState(() => createMockTrainingCenterState());
   const [centers, setCenters] = useState<TrainingCenter[]>(initialState.centers);
   const [activities, setActivities] = useState<Activity[]>(initialState.activities);
 
-  const handleAddCenter = (center: TrainingCenter) => {
+  const addCenter = (center: TrainingCenter) => {
     setCenters((current) => [...current, { ...center, id: `center-${Date.now()}`, programs: center.programs || [] }]);
   };
 
-  const handleUpdateCenter = (updatedCenter: TrainingCenter) => {
+  const updateCenter = (updatedCenter: TrainingCenter) => {
     setCenters((current) => current.map((center) => (center.id === updatedCenter.id ? updatedCenter : center)));
   };
 
-  const handleDeleteCenter = (id: string) => {
+  const deleteCenter = (id: string) => {
     setCenters((current) => current.filter((center) => center.id !== id));
   };
 
-  const handleAddProgram = (centerId: string, program: CenterProgram) => {
+  const addProgram = (centerId: string, program: CenterProgram) => {
     setCenters((current) =>
       current.map((center) =>
         center.id === centerId
@@ -52,7 +55,6 @@ export default function Home() {
     );
 
     const center = centers.find((item) => item.id === centerId);
-
     if (center) {
       setActivities((current) => [
         {
@@ -67,7 +69,7 @@ export default function Home() {
     }
   };
 
-  const handleUpdateProgram = (centerId: string, updatedProgram: CenterProgram) => {
+  const updateProgram = (centerId: string, updatedProgram: CenterProgram) => {
     setCenters((current) =>
       current.map((center) =>
         center.id === centerId
@@ -115,7 +117,6 @@ export default function Home() {
     );
 
     const center = centers.find((item) => item.id === centerId);
-
     if (center) {
       setActivities((current) => [
         {
@@ -130,7 +131,7 @@ export default function Home() {
     }
   };
 
-  const handleDeleteProgram = (centerId: string, programId: string) => {
+  const deleteProgram = (centerId: string, programId: string) => {
     setCenters((current) =>
       current.map((center) =>
         center.id === centerId
@@ -140,50 +141,33 @@ export default function Home() {
     );
   };
 
-  const handleViewCenter = (centerId: string) => {
-    router.push(`/?viewCenter=${centerId}`);
-    setActiveTab('training-center');
-  };
-
-  const handleClearHistory = () => {
+  const clearHistory = () => {
     setActivities([]);
   };
 
-  const viewingCenter = viewingCenterId ? centers.find((c) => c.id === viewingCenterId) : null;
-
   return (
-    <>
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-      <MainLayout>
-        {viewingCenter ? (
-          <CenterDetailView
-            center={viewingCenter}
-            onAddProgram={handleAddProgram}
-            onUpdateProgram={handleUpdateProgram}
-            onDeleteProgram={handleDeleteProgram}
-            onUpdateCenter={handleUpdateCenter}
-            onDeleteCenter={handleDeleteCenter}
-            onBack={() => router.push('/?viewCenter=')}
-          />
-        ) : (
-          <>
-            <div className={activeTab === 'dashboard' ? 'block' : 'hidden'}>
-              <DashboardTab centers={centers} activities={activities} onClearHistory={handleClearHistory} />
-            </div>
-            <div className={activeTab === 'training-center' ? 'block' : 'hidden'}>
-              <CenterRegistrationTab
-                centers={centers}
-                onAddCenter={handleAddCenter}
-                onUpdateCenter={handleUpdateCenter}
-                onDeleteCenter={handleDeleteCenter}
-                onAddProgram={handleAddProgram}
-                onUpdateProgram={handleUpdateProgram}
-                onViewCenter={handleViewCenter}
-              />
-            </div>
-          </>
-        )}
-      </MainLayout>
-    </>
+    <TrainingCenterContext.Provider
+      value={{
+        centers,
+        activities,
+        addCenter,
+        updateCenter,
+        deleteCenter,
+        addProgram,
+        updateProgram,
+        deleteProgram,
+        clearHistory,
+      }}
+    >
+      {children}
+    </TrainingCenterContext.Provider>
   );
+}
+
+export function useTrainingCenter() {
+  const context = useContext(TrainingCenterContext);
+  if (context === undefined) {
+    throw new Error('useTrainingCenter must be used within TrainingCenterProvider');
+  }
+  return context;
 }

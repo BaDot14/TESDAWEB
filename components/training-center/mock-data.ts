@@ -1,16 +1,30 @@
 import type { Activity } from '../dashboard/mock-data';
 
-export interface CenterProgram {
-  id: string;
+export interface ProgramSnapshot {
   name: string;
-  type: 'WTR' | 'NTR' | 'MTP' | 'COC';
+  type: 'WTR' | 'NTR' | 'MTP' | 'COC' | '';
   numberOfHours: string;
   programRegistrationNumber: string;
   dateIssued: string;
   validityDate: string;
-  trainer: string;
+  trainers: string[];
   ctprSerialNumber: string;
-  issuanceType: 'New Issuance' | 'Reissuance';
+  trainerCertification: string;
+  issuanceType: 'New Issuance' | 'Reissuance' | '';
+}
+
+export interface ProgramHistoryEntry {
+  id: string;
+  timestamp: string;
+  action: 'edited' | 'renewed';
+  snapshot: ProgramSnapshot;
+}
+
+export interface CenterProgram extends ProgramSnapshot {
+  id: string;
+  history?: ProgramHistoryEntry[];
+  lastEditedAt?: string;
+  lastRenewedAt?: string;
 }
 
 export interface TrainingCenter {
@@ -42,9 +56,11 @@ const createProgram = (
   programRegistrationNumber: `PRN-${1000 + index}`,
   dateIssued: '2026-04-01',
   validityDate: '2029-04-01',
-  trainer: `Trainer ${index + 1}`,
+  trainers: [`Trainer ${index + 1}`],
   ctprSerialNumber: `CTPR-${2000 + index}`,
   issuanceType: 'New Issuance',
+  trainerCertification: `Certification ${index + 1}`,
+  history: [],
   ...overrides,
 });
 

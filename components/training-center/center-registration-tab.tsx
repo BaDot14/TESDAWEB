@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { CentersList } from './centers-list';
-import { CenterModal } from './center-modal';
+import { AddCenterPage } from './add-center-page';
 import { CenterProgram, TrainingCenter } from './mock-data';
 import { Button } from '@/components/ui/button';
 
@@ -26,15 +26,10 @@ export function CenterRegistrationTab({
   onViewCenter,
 }: CenterRegistrationTabProps) {
   const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCenter, setEditingCenter] = useState<TrainingCenter | null>(null);
+  const [isAddingCenter, setIsAddingCenter] = useState(false);
 
   const handleAddCenter = (newCenter: TrainingCenter) => {
     onAddCenter(newCenter);
-  };
-
-  const handleEditCenter = (updatedCenter: TrainingCenter) => {
-    onUpdateCenter(updatedCenter);
   };
 
   const handleDeleteCenter = (id: string) => {
@@ -46,29 +41,24 @@ export function CenterRegistrationTab({
     onUpdateCenter({ ...center, status: nextStatus });
   };
 
-  const handleOpenEditModal = (center: TrainingCenter) => {
-    setEditingCenter(center);
-    setIsModalOpen(true);
-  };
-
-  const handleOpenViewModal = (center: TrainingCenter) => {
+  const handleOpenViewPage = (center: TrainingCenter) => {
     onViewCenter?.(center.id);
   };
 
-  const handleOpenAddModal = () => {
-    setEditingCenter(null);
-    setIsModalOpen(true);
-  };
+  // Show add center page
+  if (isAddingCenter) {
+    return (
+      <AddCenterPage
+        onSubmit={(center) => {
+          handleAddCenter(center);
+          setIsAddingCenter(false);
+        }}
+        onCancel={() => setIsAddingCenter(false)}
+      />
+    );
+  }
 
-  const handleSubmitModal = (center: TrainingCenter) => {
-    if (editingCenter) {
-      handleEditCenter(center);
-    } else {
-      handleAddCenter(center);
-    }
-    setEditingCenter(null);
-  };
-
+  // Show centers list
   return (
     <div className="space-y-6">
       {/* Header Section */}
@@ -80,7 +70,7 @@ export function CenterRegistrationTab({
           </p>
         </div>
         <Button
-          onClick={handleOpenAddModal}
+          onClick={() => setIsAddingCenter(true)}
           className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium md:w-auto w-full"
         >
           Add New Center
@@ -90,23 +80,11 @@ export function CenterRegistrationTab({
       {/* Centers List */}
       <CentersList
         centers={centers}
-        onView={handleOpenViewModal}
-        onEdit={handleOpenEditModal}
+        onView={handleOpenViewPage}
         onDelete={handleDeleteCenter}
         onToggleStatus={handleToggleStatus}
         filter={filter}
         onFilterChange={setFilter}
-      />
-
-      {/* Modal for Add/Edit */}
-      <CenterModal
-        isOpen={isModalOpen}
-        center={editingCenter}
-        onClose={() => {
-          setIsModalOpen(false);
-          setEditingCenter(null);
-        }}
-        onSubmit={handleSubmitModal}
       />
     </div>
   );

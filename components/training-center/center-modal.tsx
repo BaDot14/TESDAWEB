@@ -25,10 +25,7 @@ export function CenterModal({ isOpen, center, onClose, onSubmit }: CenterModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent
-        className="w-225 max-w-[95vw] max-h-[80vh] overflow-y-auto"
-        style={{ width: '900px', maxWidth: '95vw' }}
-      >
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto rounded-3xl p-8 sm:p-10">
         <DialogHeader>
           <DialogTitle>
             {center ? 'Edit Training Center' : 'Add New Training Center'}
@@ -39,7 +36,7 @@ export function CenterModal({ isOpen, center, onClose, onSubmit }: CenterModalPr
               : 'Fill in the information for the new training center'}
           </DialogDescription>
         </DialogHeader>
-        <div className="max-h-[calc(80vh-120px)] overflow-y-auto pr-4">
+        <div className="max-h-[calc(90vh-160px)] overflow-y-auto pr-2">
           <CenterForm
             onSubmit={handleSubmit}
             initialData={center || undefined}

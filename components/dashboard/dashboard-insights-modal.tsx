@@ -86,7 +86,7 @@ export function DashboardInsightsModal({
                       {centerName} • {centerCity}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">
-                      {program.type} • {program.numberOfHours} hours • {program.trainer}
+                      {program.type} • {program.numberOfHours} hours • {program.trainers.join(', ')}
                     </p>
                   </div>
                   <Badge variant="outline">{program.issuanceType}</Badge>
@@ -134,7 +134,7 @@ export function DashboardInsightsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl p-8 sm:p-10">
         <DialogHeader>
           <DialogTitle>{kind ? titleMap[kind] : 'Dashboard Details'}</DialogTitle>
           <DialogDescription>{kind ? descriptionMap[kind] : 'Dashboard data.'}</DialogDescription>

@@ -6,12 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TrainingCenter } from './mock-data';
-import { Edit2, Eye, Trash2, CheckCircle, XCircle, Search } from 'lucide-react';
+import { Eye, Trash2, CheckCircle, XCircle, Search } from 'lucide-react';
 
 interface CentersListProps {
   centers: TrainingCenter[];
   onView: (center: TrainingCenter) => void;
-  onEdit: (center: TrainingCenter) => void;
   onDelete: (id: string) => void;
   onToggleStatus: (center: TrainingCenter) => void;
   filter: 'all' | 'active' | 'inactive';
@@ -21,7 +20,6 @@ interface CentersListProps {
 export function CentersList({
   centers,
   onView,
-  onEdit,
   onDelete,
   onToggleStatus,
   filter,
@@ -41,7 +39,9 @@ export function CentersList({
         (program) =>
           program.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           program.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          program.trainer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          program.trainers.some((trainer) =>
+            trainer.toLowerCase().includes(searchTerm.toLowerCase()),
+          ) ||
           program.programRegistrationNumber.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     return matchesFilter && matchesSearch;
@@ -178,17 +178,6 @@ export function CentersList({
                           }`}
                         >
                           {center.status === 'active' ? 'Inactive' : 'Active'}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onEdit(center);
-                          }}
-                          className="rounded-lg h-8 w-8 hover:bg-blue-100"
-                        >
-                          <Edit2 className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"

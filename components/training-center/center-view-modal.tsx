@@ -19,9 +19,17 @@ interface CenterViewModalProps {
   onClose: () => void;
   onAddProgram: (centerId: string, program: CenterProgram) => void;
   onUpdateProgram?: (centerId: string, program: CenterProgram) => void;
+  onDeleteProgram?: (centerId: string, programId: string) => void;
 }
 
-export function CenterViewModal({ isOpen, center, onClose, onAddProgram, onUpdateProgram }: CenterViewModalProps) {
+export function CenterViewModal({
+  isOpen,
+  center,
+  onClose,
+  onAddProgram,
+  onUpdateProgram,
+  onDeleteProgram,
+}: CenterViewModalProps) {
   const [isAddProgramOpen, setIsAddProgramOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<CenterProgram | null>(null);
   const [editingProgram, setEditingProgram] = useState<CenterProgram | null>(null);
@@ -49,10 +57,7 @@ export function CenterViewModal({ isOpen, center, onClose, onAddProgram, onUpdat
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent
-          className="w-225 max-w-[95vw] max-h-[90vh] overflow-y-auto"
-          style={{ width: '900px', maxWidth: '95vw' }}
-        >
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto rounded-3xl p-8 sm:p-10">
           <DialogHeader>
             <DialogTitle>{center.name}</DialogTitle>
             <DialogDescription>
@@ -60,36 +65,36 @@ export function CenterViewModal({ isOpen, center, onClose, onAddProgram, onUpdat
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-xl border p-4 bg-slate-50">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Municipality/City</p>
-              <p className="mt-1 font-medium">{center.city}</p>
+          <div className="rounded-2xl border bg-slate-50/70 p-5 text-sm divide-y divide-slate-200/60">
+            <div className="flex flex-col gap-1 py-3 first:pt-0 sm:flex-row sm:items-center">
+              <span className="w-40 text-muted-foreground font-medium">Municipality/City:</span>
+              <span className="text-foreground">{center.city}</span>
             </div>
-            <div className="rounded-xl border p-4 bg-slate-50">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Region</p>
-              <p className="mt-1 font-medium">{center.district}</p>
+            <div className="flex flex-col gap-1 py-3 sm:flex-row sm:items-center">
+              <span className="w-40 text-muted-foreground font-medium">Region:</span>
+              <span className="text-foreground">{center.district}</span>
             </div>
-            <div className="rounded-xl border p-4 bg-slate-50">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Institution Type</p>
-              <p className="mt-1 font-medium">{center.type}</p>
+            <div className="flex flex-col gap-1 py-3 sm:flex-row sm:items-center">
+              <span className="w-40 text-muted-foreground font-medium">Institution Type:</span>
+              <span className="text-foreground">{center.type}</span>
             </div>
-            <div className="rounded-xl border p-4 bg-slate-50">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Subtype</p>
-              <p className="mt-1 font-medium">{center.classification}</p>
+            <div className="flex flex-col gap-1 py-3 sm:flex-row sm:items-center">
+              <span className="w-40 text-muted-foreground font-medium">Subtype:</span>
+              <span className="text-foreground">{center.classification}</span>
             </div>
-            <div className="rounded-xl border p-4 bg-slate-50">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Contact</p>
-              <div className="mt-1">
-                <p className="font-medium">{center.phone}</p>
-                <p className="text-xs text-muted-foreground">{center.email}</p>
+            <div className="flex flex-col gap-1 py-3 sm:flex-row sm:items-start">
+              <span className="w-40 text-muted-foreground font-medium">Contact:</span>
+              <span className="text-foreground">
+                <span className="block">{center.phone}</span>
+                <span className="block text-xs text-muted-foreground">{center.email}</span>
                 {center.website ? (
-                  <p className="text-xs text-muted-foreground">{center.website}</p>
+                  <span className="block text-xs text-muted-foreground">{center.website}</span>
                 ) : null}
-              </div>
+              </span>
             </div>
-            <div className="rounded-xl border p-4 bg-slate-50">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Status</p>
-              <p className="mt-1 font-medium capitalize">{center.status}</p>
+            <div className="flex flex-col gap-1 py-3 last:pb-0 sm:flex-row sm:items-center">
+              <span className="w-40 text-muted-foreground font-medium">Status:</span>
+              <span className="text-foreground capitalize">{center.status}</span>
             </div>
           </div>
 
@@ -133,18 +138,30 @@ export function CenterViewModal({ isOpen, center, onClose, onAddProgram, onUpdat
                       <td className="px-4 py-3 text-foreground">{program.programRegistrationNumber}</td>
                       <td className="px-4 py-3 text-foreground">{program.dateIssued}</td>
                       <td className="px-4 py-3 text-foreground">{program.validityDate}</td>
-                      <td className="px-4 py-3 text-foreground">{program.trainer}</td>
+                      <td className="px-4 py-3 text-foreground">
+                        {program.trainers.join(', ')}
+                      </td>
                       <td className="px-4 py-3 text-foreground">{program.ctprSerialNumber}</td>
                       <td className="px-4 py-3 text-foreground">{program.issuanceType}</td>
                       <td className="px-4 py-3 text-center">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="rounded-lg"
-                          onClick={() => handleEditProgram(program)}
-                        >
-                          Edit
-                        </Button>
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-lg"
+                            onClick={() => setSelectedProgram(program)}
+                          >
+                            View
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-lg text-red-600 hover:bg-red-50 hover:text-red-600"
+                            onClick={() => onDeleteProgram?.(center.id, program.id)}
+                          >
+                            Delete
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -164,6 +181,21 @@ export function CenterViewModal({ isOpen, center, onClose, onAddProgram, onUpdat
         mode="create"
         onClose={() => setIsAddProgramOpen(false)}
         onSubmit={handleAddProgram}
+      />
+
+      <ProgramModal
+        isOpen={!!selectedProgram}
+        mode="view"
+        program={selectedProgram}
+        onClose={() => setSelectedProgram(null)}
+        onRequestEdit={(program) => {
+          setSelectedProgram(null);
+          handleEditProgram(program);
+        }}
+        onRequestDelete={(program) => {
+          onDeleteProgram?.(center.id, program.id);
+          setSelectedProgram(null);
+        }}
       />
 
       <ProgramModal
